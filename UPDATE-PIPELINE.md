@@ -58,7 +58,7 @@ The self-hosted runner:
 Typical runner workspace:
 
 ```bash
-~/actions-runner/_work/otp-relay-psi/otp-relay-pi-os/
+~/actions-runner/_work/otp-relay-pi-os/otp-relay-pi-os/
 ```
 
 ## 2.3 Live deployment target
@@ -214,7 +214,6 @@ Help Docs source must be maintained in `docs/help/` and `docs/help/assets/`, not
 
 ```text
 install.sh
-update.sh
 deploy_users.sh
 systemd/*.service
 nginx/otp-relay.conf.template
@@ -270,7 +269,6 @@ Managed files:
 
 ```text
 install.sh
-update.sh
 deploy_users.sh
 ```
 
@@ -417,11 +415,6 @@ The self-hosted GitHub Actions runner account is responsible for deployment auto
 ## Root-managed targets
 The following areas remain root-managed:
 
-## Help Docs output directory
-/opt/otp-relay/frontend/help/ is owned by the runner user (initbox)
-so the Help Docs workflow can rsync generated output directly without sudo.
-This ownership is set by install.sh and must not be changed manually.
-
 ```bash
 /etc/systemd/system/
 /etc/nginx/sites-available/
@@ -449,7 +442,7 @@ scripts/
 ## Runner workspace
 
 ```bash
-~/actions-runner/_work/otp-relay-psi/otp-relay-psi/
+~/actions-runner/_work/otp-relay-pi-os/otp-relay-pi-os/
 ```
 
 ## Live app
@@ -537,7 +530,6 @@ Edit:
 
 ```bash
 install.sh
-update.sh
 deploy_users.sh
 systemd/*.service
 nginx/otp-relay.conf.template
@@ -553,7 +545,7 @@ Push to `main`.
 ## Check runner workspace
 
 ```bash
-ls -R ~/actions-runner/_work/otp-relay-psi/otp-relay-psi
+ls -R ~/actions-runner/_work/otp-relay-pi-os/otp-relay-pi-os
 ```
 
 ## Check live app files
