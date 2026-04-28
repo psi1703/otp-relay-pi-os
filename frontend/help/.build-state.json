@@ -1,0 +1,77 @@
+{
+  "assets": {
+    "README.md": "b87ea25f9872a92aa7cc0d0d61a4f0d3246c940d893081bf7df9b4f71593e53f",
+    "it-help-desk-navigation.png": "7ab4cd188e1b7062063775c517b034dedcfbe65904dea3d6131b81cefc04d480",
+    "ivanti-add-connection.png": "58da04db1d9b18d8a0cca40dc5ace5e91860b34d163fdac16744ee996b38084e",
+    "new-user-onboarding-sequence.png": "2bd001df789cef1767465503d7b9b43fddeb0759a532687618048aac37c4c2cb",
+    "pam-account-search.png": "4b236fe521ddb02c101521b29ce448e79f8f4a1a26caaaf02d312c19746dbfea",
+    "pam-connect-psm-rdp.png": "de107d02d27e0ee8a329a49f0f8ac08e476e46e5291cb8c94abb5e0f7db405f3",
+    "renew-vpn-apply-request.png": "3f135fbcc59d2a2948514633f8efae5914ea20f12acdca6a9fab89453b30b061",
+    "renew-vpn-extension-choice.png": "caa6fed221899e04f25b02c20bff3390024adba45c633edf9c21a5e95e0b99b4",
+    "renew-vpn-form-details.png": "2f747c81a7d549a15d8addb731aeb1a319783acc44a8056aa3e4bc5c548e6b1a",
+    "renew-vpn-search-request.png": "b9763947bc5cbf65466956d62b3c4f958c5fb3a5078bca379a6f829ef91292cf",
+    "terminal-browser-desktop.png": "52a2f658f3caf69dc550708bd293bc38a981a422f2ee9cc3088054d17899eb52",
+    "terminal-browser-login.png": "0fff2e16e56358acc1b267e8aff8345b5deec2f2e71c80d07cb036232c2d7995",
+    "terminal-browser-rdp-login.png": "ff37fdad9c5421602f9e1965645f77612a995cc9968da21f546560afd0d1f5f9",
+    "terminal-rdp-client.png": "3acc0fc5dfa04c59060ce05e95bde10c4ce26477feb939368d6dc095da347350",
+    "terminal-rdp-desktop.png": "2bc2e9e92e8b32fef9c67f568ad250f15a0b127f4a2787a090bff08ac8cc5f71",
+    "terminal-xorg-login.png": "3bc4abc0c2fd13b3bfe0836e028ea320942327798cc6b0410491aec7d5a352f7",
+    "vpn-add-pam-service.png": "c236bd313f9697d492081dbdc78f6d7c594d341aca304e48507a1181ab8d3531",
+    "vpn-add-ssh-service.png": "5cae636b13703f42bee2cdf46a7b20d4a6c59f733defb872c16fa738cd08ad9f",
+    "vpn-apply-request.png": "ca180f8a952142426ede7a0f906c2af7375364112ae3e17bae9795a5cb072b3d",
+    "vpn-new-vpn-access.png": "a0c31eca3adfc2b1059f5114ebe4dcc36d274e3f1c76b6030424bf867a3d56c6",
+    "vpn-request-form-details.png": "c774516cd07b6c99eaf5424f877227f2b22aa512289a1f40382b7e2c7d48be66",
+    "vpn-search-request.png": "aa7ed7da544cbb66f76e1dec8916fe122b462c0c2716d3aeae2de5320b96b650",
+    "winscp-login.png": "326c5a3f1d7e2a040ba96db11b6a5b48d4fff850415d8f2429af979542cffec7"
+  },
+  "markdown": {
+    "00-overview.md": {
+      "hash": "902efefdce41dedd85e37da845bc9fa19016233fc896b6e105e31d3207057fc6",
+      "slug": "overview"
+    },
+    "01-new-user-onboarding.md": {
+      "hash": "090a6198d74b19d76589a5a52172a68c29ef220e3787e0ec98f9161dcdbdf558",
+      "slug": "new-user-onboarding"
+    },
+    "02-reset-rta-password.md": {
+      "hash": "efea02962469bbb660e547c196d3aff1c08418a378b7b07e3dd90f7b39aa7f08",
+      "slug": "reset-rta-password"
+    },
+    "03-configure-oracle-authenticator.md": {
+      "hash": "40d155de529097dbe01beee8e4ccf964cf35793f644ace46575f941ea4249944",
+      "slug": "configure-oracle-authenticator"
+    },
+    "04-request-rdp-sftp-pam-access.md": {
+      "hash": "78e3a5836bee6874a838a3b9a488afb9865899cc84e6ce7efb283ae9ed5feead",
+      "slug": "request-rdp-sftp-pam-access"
+    },
+    "05-install-rta-vpn.md": {
+      "hash": "88ffeb6ebdac30493c842bb3e73d6fe0b9e3fbdf96a07e2fc7a2dcd4c02299b5",
+      "slug": "install-rta-vpn"
+    },
+    "06-renew-rdp-sftp-pam-access.md": {
+      "hash": "c940569ceabf6624293d97039997a16bfdf6f2ee5e6fbfb009c4ebbbe388c220",
+      "slug": "renew-rdp-sftp-pam-access"
+    },
+    "07-install-winscp.md": {
+      "hash": "c31fcacd8b3a48681385d14d1f086f11b840b6b9bfdc9532b27ae560b2ef5045",
+      "slug": "install-winscp"
+    },
+    "08-use-pam.md": {
+      "hash": "e8a3204ef6af2fb041ebfe3e7ee6a69ab47388b96ebdea684e7cf74c969eb0b7",
+      "slug": "use-pam"
+    },
+    "09-rta-it-support-ticket.md": {
+      "hash": "4fca50f6af2eb731e16ae972712ff3befd7778d98d7a43d7fe6d665de89acb1d",
+      "slug": "rta-it-support-ticket"
+    },
+    "10-terminal-server-access.md": {
+      "hash": "9f01d4e8e0ccef36696df96e5d2997fc30c64a5f60a1275e508c4c2b1bf7b33d",
+      "slug": "terminal-server-access"
+    },
+    "11-notes-and-tips.md": {
+      "hash": "d0e0c8e7d98ec9ebe70909f94ac2eab583d39c1a1701a2cacaae0b856c2a586a",
+      "slug": "notes-and-tips"
+    }
+  }
+}
