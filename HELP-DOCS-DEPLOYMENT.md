@@ -273,21 +273,16 @@ Copy the temporary registration token shown on that page.
 sudo bash /opt/otp-relay/setup_action-runner.sh <RUNNER_TOKEN>
 ```
 
-The script will:
+The script will automatically:
 
-- auto-detect the architecture (`ARM64` on Pi OS 64-bit)
-- download the correct runner package
-- configure the runner for this repo
-- install and start the runner as a system service
+- detect the Pi's architecture (`ARM64`)
+- use the hostname shortname as the runner name (pass a name as the last argument to override)
+- download the correct runner package for the detected architecture
+- configure the runner for this repo with labels `self-hosted,Linux,ARM64`
+- install and start the runner as a system service under the `initbox` user
 
-### Recommended answers during setup
-
-- **Runner group:** `Default`
-- **Runner name:** `raspberrypi-otp` (or similar)
-- **Extra labels:** `update-docs`
-- **Work folder:** press Enter for the default `_work`
-
-Do **not** point the runner work folder at `/opt/otp-relay`. Use the runner-managed `_work` folder.
+Do **not** point the runner work folder at `/opt/otp-relay`. The script uses the
+runner-managed `_work` folder automatically.
 
 ## 7.3 Confirm in GitHub
 
@@ -308,20 +303,16 @@ sudo systemctl reload nginx
 
 # 8. Runner labels
 
-The runner was configured with labels:
+The runner is configured by `setup_action-runner.sh` with these standard labels:
 
 - `self-hosted`
 - `Linux`
 - `ARM64`
-- `update-docs`
 
-Your workflow `runs-on` labels must match the actual runner labels exactly as shown
-on the runner page in GitHub.
-
-Recommended:
+Your workflow `runs-on` must match these exactly:
 
 ```yaml
-runs-on: [self-hosted, Linux, ARM64, update-docs]
+runs-on: [self-hosted, Linux, ARM64]
 ```
 
 ---
@@ -350,7 +341,7 @@ on:
 
 jobs:
   deploy-help-docs:
-    runs-on: [self-hosted, Linux, ARM64, update-docs]
+    runs-on: [self-hosted, Linux, ARM64]
 
     steps:
       - name: Checkout repo
