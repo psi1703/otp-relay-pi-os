@@ -13,11 +13,13 @@
 #   sudo bash setup_action-runner.sh ABC123... arm64 runner-pi
 #
 # Notes:
-#   - If no runner name is provided, the script prompts for one and defaults to
-#     the host shortname.
+#   - If no runner name is provided, the hostname shortname is used automatically.
+#     Pass a name explicitly as the last argument to override it.
 #   - The bundled GitHub dependency helper is skipped by default to avoid noisy
-#     legacy-package probe errors on modern Debian/Ubuntu systems. Set
+#     legacy-package probe errors on modern Debian/Raspberry Pi OS systems. Set
 #     RUN_BUNDLED_HELPER=1 to run it explicitly.
+#   - Target repo: https://github.com/psi1703/otp-relay-pi-os
+#     Update REPO_URL in this script if the repo changes.
 # =============================================================================
 
 set -euo pipefail
