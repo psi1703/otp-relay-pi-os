@@ -1,8 +1,7 @@
 # OTP Relay Portal — Help Docs Auto-Deploy Guide
 
-This guide documents the **Help Docs automation** built for `psi1703/otp-relay-psi`.
+This guide documents the **Help Docs automation** built for `psi1703/otp-relay-pi-os`.
 
-It is meant to live **alongside** the main project `README.md`, not replace it.
 
 ---
 
@@ -62,7 +61,7 @@ The self-hosted runner:
 Typical runner workspace:
 
 ```bash
-~/actions-runner/_work/otp-relay-psi/otp-relay-psi/
+~/actions-runner/_work/otp-relay-pi-os/otp-relay-pi-os/
 ```
 
 ## 3. Live deployed portal
@@ -219,7 +218,7 @@ This section documents the GitHub SSH setup used so the Pi can authenticate to t
 On the Pi:
 
 ```bash
-ssh-keygen -t ed25519 -C "otp-relay-pi"
+ssh-keygen -t ed25519 -C "raspberrypi-otp"
 ```
 
 This typically creates:
@@ -358,7 +357,7 @@ tar xzf ./actions-runner-linux-arm64-<version>.tar.gz
 Run the registration command GitHub provides, for example:
 
 ```bash
-./config.sh --url https://github.com/psi1703/otp-relay-psi --token <temporary-token>
+./config.sh --url https://github.com/psi1703/otp-relay-pi-os --token <temporary-token>
 ```
 
 ### Recommended answers during setup
@@ -409,14 +408,13 @@ The runner was configured with labels such as:
 - `self-hosted`
 - `Linux`
 - `ARM64`
-- `update-docs`
 
 Your workflow `runs-on` labels must match the actual runner labels.
 
 Recommended:
 
 ```yaml
-runs-on: [self-hosted, Linux, ARM64, update-docs]
+runs-on: [self-hosted, Linux, ARM64]
 ```
 
 If you keep the YAML lowercase for `linux`, GitHub usually still matches its standard label, but the safest approach is to mirror the labels shown on the runner page exactly.
@@ -447,7 +445,7 @@ on:
 
 jobs:
   deploy-help-docs:
-    runs-on: [self-hosted, Linux, ARM64, update-docs]
+    runs-on: [self-hosted, Linux, ARM64]
 
     steps:
       - name: Checkout repo
@@ -640,7 +638,7 @@ ls -R /opt/otp-relay/frontend/help
 ## Check the runner workspace output
 
 ```bash
-ls -R ~/actions-runner/_work/otp-relay-psi/otp-relay-psi/frontend/help
+ls -R ~/actions-runner/_work/otp-relay-psi/otp-relay-pi-os/frontend/help
 ```
 
 ## Search for a phrase in the live deployed docs
@@ -652,7 +650,7 @@ grep -R "some text from your doc" -n /opt/otp-relay/frontend/help
 ## Search for the same phrase in the runner workspace
 
 ```bash
-grep -R "some text from your doc" -n ~/actions-runner/_work/otp-relay-psi/otp-relay-psi/frontend/help
+grep -R "some text from your doc" -n ~/actions-runner/_work/otp-relay-pi-os/otp-relay-pi-os/frontend/help
 ```
 
 If the runner workspace is updated but the live folder is not, the sync step is failing.
