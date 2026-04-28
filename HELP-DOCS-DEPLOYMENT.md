@@ -10,32 +10,15 @@ This guide documents the **Help Docs automation** built for `psi1703/otp-relay-p
 This document explains:
 
 - how SSH access for GitHub was set up on the Raspberry Pi
-- how the **deploy key** was added to GitHub
 - how the **self-hosted GitHub Actions runner** was installed and configured
 - how the Help Docs workflow works
 - where source files, generated files, and live deployed files live
 - how to safely add new markdown pages and PNG screenshots
 - how to troubleshoot common deployment failures
 
----
-
-## Recommended location in the repo
-
-Save this file as one of these:
-
-- `HELP-DOCS-AUTODEPLOY.md`
-- `README-HELP-DOCS-AUTODEPLOY.md`
-- `docs/HELP-DOCS-AUTODEPLOY.md`
-
-Then add a short pointer in the main `README.md`, for example:
-
-```md
-## Help Docs auto-deploy
-
-Help Docs are built from `docs/help/` and deployed automatically on the Raspberry Pi by a self-hosted GitHub Actions runner.
-
-See [HELP-DOCS-AUTODEPLOY.md](./HELP-DOCS-AUTODEPLOY.md) for setup, deployment flow, SSH/deploy-key steps, runner configuration, and troubleshooting.
-```
+> **Note:** This setup uses a GitHub account SSH key, not a repo-specific deploy key.
+> The account SSH key covers all repos the account has access to and is sufficient
+> for both manual git operations and the Actions runner checkout.
 
 ---
 
@@ -211,217 +194,139 @@ workflow sync
 
 # 6. GitHub SSH setup on the Raspberry Pi
 
-This section documents the GitHub SSH setup used so the Pi can authenticate to the repo.
+This setup uses a **GitHub account SSH key** — one key that authenticates the `initbox`
+user to GitHub for all repos the account has access to. This is simpler than a
+per-repo deploy key and works for both manual git operations and the Actions runner.
 
 ## 6.1 Generate an SSH key on the Pi
 
-On the Pi:
-
 ```bash
-ssh-keygen -t ed25519 -C "raspberrypi-otp"
+sudo ssh-keygen -t ed25519 -C "raspberrypi-otp" -f /root/.ssh/id_ed25519
 ```
 
-This typically creates:
-
-```bash
-~/.ssh/id_ed25519
-~/.ssh/id_ed25519.pub
-```
+Press Enter twice to skip the passphrase (required for unattended runner operation).
 
 ## 6.2 View the public key
 
 ```bash
-cat ~/.ssh/id_ed25519.pub
+sudo cat /root/.ssh/id_ed25519.pub
 ```
 
 Copy the full line.
 
-## 6.3 Add GitHub to known hosts
+## 6.3 Add the key to your GitHub account
+
+Go to:
+
+**GitHub → Settings → SSH and GPG keys → New SSH key**
+
+- **Title:** `raspberrypi-otp`
+- **Key type:** Authentication Key
+- **Key:** paste the public key
+
+## 6.4 Add GitHub to known hosts
 
 ```bash
-mkdir -p ~/.ssh
-chmod 700 ~/.ssh
-ssh-keyscan github.com >> ~/.ssh/known_hosts
-chmod 644 ~/.ssh/known_hosts
+sudo ssh-keyscan github.com >> /root/.ssh/known_hosts
+sudo chmod 644 /root/.ssh/known_hosts
 ```
 
-## 6.4 Optional SSH config
-To force the key:
-
-```sshconfig
-Host github.com
-  HostName github.com
-  User git
-  IdentityFile ~/.ssh/id_ed25519
-  IdentitiesOnly yes
-```
-
-Save that as:
+## 6.5 Test SSH authentication
 
 ```bash
-~/.ssh/config
-```
-
-and then run:
-
-```bash
-chmod 600 ~/.ssh/config
-```
-
-## 6.5 Test SSH
-
-```bash
-ssh -T git@github.com
+sudo ssh -T git@github.com
 ```
 
 Expected success message:
 
 ```text
-Hi <repo-or-user>! You've successfully authenticated, but GitHub does not provide shell access.
+Hi psi1703! You've successfully authenticated, but GitHub does not provide shell access.
+```
+
+## 6.6 Set the remote to SSH
+
+```bash
+cd /opt/otp-relay
+sudo git remote set-url origin git@github.com:psi1703/otp-relay-pi-os.git
+sudo git remote -v
 ```
 
 ---
 
-# 7. Deploy key setup in GitHub
+# 7. Self-hosted runner setup on the Pi
 
-The Pi used a **deploy key** for this repo.
+The runner is set up using the helper script included in the repo.
 
-## 7.1 Open the repo in GitHub
+## 7.1 Get a runner registration token from GitHub
+
 Go to:
 
-**Repository → Settings → Deploy keys → Add deploy key**
+**Repository → Settings → Actions → Runners → New self-hosted runner**
 
-## 7.2 Fill in the form
+Copy the temporary registration token shown on that page.
 
-- **Title:** something clear like `raspberry-pi-help-docs`
-- **Key:** paste the contents of `~/.ssh/id_ed25519.pub`
+> The token expires quickly. If the script reports an invalid token, generate a new one.
 
-## 7.3 Very important
-Enable:
-
-- **Allow write access**
-
-Without write access, the Pi can fetch/pull but cannot push.
-
----
-
-## Screenshot checkpoint
-Add a screenshot here of the GitHub page:
-
-**Settings → Deploy keys → Add deploy key**
-
-Suggested filename:
-
-```text
-docs/help/assets/github-deploy-key-form.png
-```
-
-Suggested insertion point if you later add screenshots to this guide:
-
-```md
-![GitHub deploy key form](docs/help/assets/github-deploy-key-form.png)
-```
-
----
-
-# 8. Self-hosted runner setup on the Pi
-
-## 8.1 Open the repo runner page
-In GitHub:
-
-**Repository → Settings → Actions → Runners → New runner**
-
-Choose:
-
-- **Runner image:** Linux
-- **Architecture:** ARM64 (for Raspberry Pi if applicable)
-
-GitHub generates the exact setup commands.
-
-## 8.2 Create the runner directory on the Pi
+## 7.2 Run the setup script
 
 ```bash
-mkdir -p ~/actions-runner
-cd ~/actions-runner
+sudo bash /opt/otp-relay/setup_action-runner.sh <RUNNER_TOKEN>
 ```
 
-## 8.3 Download and extract the runner
-Use the exact commands GitHub provides. They look like:
+The script will:
 
-```bash
-curl -o actions-runner-linux-arm64-<version>.tar.gz -L <download-url>
-tar xzf ./actions-runner-linux-arm64-<version>.tar.gz
-```
-
-## 8.4 Configure the runner
-Run the registration command GitHub provides, for example:
-
-```bash
-./config.sh --url https://github.com/psi1703/otp-relay-pi-os --token <temporary-token>
-```
+- auto-detect the architecture (`ARM64` on Pi OS 64-bit)
+- download the correct runner package
+- configure the runner for this repo
+- install and start the runner as a system service
 
 ### Recommended answers during setup
 
 - **Runner group:** `Default`
-- **Runner name:** `raspberrypi` (or similar)
+- **Runner name:** `raspberrypi-otp` (or similar)
 - **Extra labels:** `update-docs`
 - **Work folder:** press Enter for the default `_work`
 
-Do **not** point the runner work folder at your live repo or at `/opt/otp-relay`. Use the runner-managed `_work` folder.
+Do **not** point the runner work folder at `/opt/otp-relay`. Use the runner-managed `_work` folder.
 
-## 8.5 Install the runner as a service
+## 7.3 Confirm in GitHub
 
-```bash
-sudo ./svc.sh install
-sudo ./svc.sh start
-sudo ./svc.sh status
-```
-
-## 8.6 Confirm in GitHub
-Back in:
+Go to:
 
 **Settings → Actions → Runners**
 
-the runner should show as **Idle**.
+The runner should show as **Idle**.
 
----
+## 7.4 Remove the default nginx site (if not already done)
 
-## Screenshot checkpoint
-Add a screenshot here of:
-
-- the runner registration page
-- the runner showing as **Idle**
-
-Suggested filenames:
-
-```text
-docs/help/assets/github-runner-new-runner.png
-docs/help/assets/github-runner-idle.png
+```bash
+sudo rm /etc/nginx/sites-enabled/default
+sudo systemctl reload nginx
 ```
 
 ---
 
-# 9. Runner labels
+# 8. Runner labels
 
-The runner was configured with labels such as:
+The runner was configured with labels:
 
 - `self-hosted`
 - `Linux`
 - `ARM64`
+- `update-docs`
 
-Your workflow `runs-on` labels must match the actual runner labels.
+Your workflow `runs-on` labels must match the actual runner labels exactly as shown
+on the runner page in GitHub.
 
 Recommended:
 
 ```yaml
-runs-on: [self-hosted, Linux, ARM64]
+runs-on: [self-hosted, Linux, ARM64, update-docs]
 ```
-
-If you keep the YAML lowercase for `linux`, GitHub usually still matches its standard label, but the safest approach is to mirror the labels shown on the runner page exactly.
 
 ---
 
-# 10. Workflow file
+# 9. Workflow file
 
 Workflow file:
 
@@ -445,7 +350,7 @@ on:
 
 jobs:
   deploy-help-docs:
-    runs-on: [self-hosted, Linux, ARM64]
+    runs-on: [self-hosted, Linux, ARM64, update-docs]
 
     steps:
       - name: Checkout repo
@@ -474,7 +379,7 @@ jobs:
 
 ---
 
-# 11. Why `actions/checkout@v5`
+# 10. Why `actions/checkout@v5`
 
 Use:
 
@@ -482,11 +387,12 @@ Use:
 uses: actions/checkout@v5
 ```
 
-instead of `@v4`, to stay aligned with GitHub’s Node 24 direction and avoid Node 20 deprecation warnings.
+instead of `@v4`, to stay aligned with GitHub's Node 24 direction and avoid
+Node 20 deprecation warnings.
 
 ---
 
-# 12. Why `rsync --delete` is used
+# 11. Why `rsync --delete` is used
 
 This deployment uses:
 
@@ -494,7 +400,6 @@ This deployment uses:
 rsync -rltvz --delete --no-group --no-owner frontend/help/ /opt/otp-relay/frontend/help/
 ```
 
-## Meaning
 This makes the live help-docs folder match the generated output exactly.
 
 That is good because:
@@ -503,7 +408,8 @@ That is good because:
 - the live folder stays clean
 
 ## Important warning
-If a file is only placed manually in the live folder, and not generated from the repo, it may be deleted on the next deployment.
+If a file is only placed manually in the live folder and not generated from the repo,
+it will be deleted on the next deployment.
 
 That is why:
 - markdown must live in `docs/help/`
@@ -511,23 +417,23 @@ That is why:
 
 ---
 
-# 13. Permissions required for deployment
+# 12. Permissions required for deployment
 
-The runner user must be able to write into:
+The runner user (`initbox`) must be able to write into:
 
 ```bash
 /opt/otp-relay/frontend/help/
 ```
 
-If the workflow fails with:
+This is handled automatically by `install.sh`, which sets ownership during every
+fresh install:
 
-- `Permission denied`
-- `Operation not permitted`
-- `rsync error code 23`
+```bash
+chown -R initbox:root /opt/otp-relay/frontend/help
+chmod -R 755 /opt/otp-relay/frontend/help
+```
 
-then the runner lacks permissions for the destination folder.
-
-## Typical fix
+If you ever need to restore permissions manually after something goes wrong:
 
 ```bash
 sudo chown -R initbox:initbox /opt/otp-relay/frontend/help
@@ -535,11 +441,12 @@ find /opt/otp-relay/frontend/help -type d -exec chmod 755 {} \;
 find /opt/otp-relay/frontend/help -type f -exec chmod 644 {} \;
 ```
 
-Adjust `initbox` if your runner runs under a different user.
+If the workflow fails with `Permission denied`, `Operation not permitted`, or
+`rsync error code 23`, run the commands above and re-trigger the workflow.
 
 ---
 
-# 14. Where the portal reads the docs from
+# 13. Where the portal reads the docs from
 
 The frontend fetches:
 
@@ -567,7 +474,7 @@ So the live source that matters is:
 
 ---
 
-# 15. Day-to-day usage
+# 14. Day-to-day usage
 
 ## Add a new Help Doc page
 
@@ -627,7 +534,7 @@ and push.
 
 ---
 
-# 16. Manual verification commands on the Pi
+# 15. Manual verification commands on the Pi
 
 ## Check the live deployed help docs
 
@@ -638,7 +545,7 @@ ls -R /opt/otp-relay/frontend/help
 ## Check the runner workspace output
 
 ```bash
-ls -R ~/actions-runner/_work/otp-relay-psi/otp-relay-pi-os/frontend/help
+ls -R ~/actions-runner/_work/otp-relay-pi-os/otp-relay-pi-os/frontend/help
 ```
 
 ## Search for a phrase in the live deployed docs
@@ -657,7 +564,7 @@ If the runner workspace is updated but the live folder is not, the sync step is 
 
 ---
 
-# 17. Troubleshooting
+# 16. Troubleshooting
 
 ## Problem: workflow ran but portal did not change
 Check:
@@ -682,7 +589,7 @@ Typical messages:
 - `rsync error code 23`
 
 Fix:
-- correct ownership/permissions of `/opt/otp-relay/frontend/help/`
+- run the manual permission restore commands in Section 12
 
 ## Problem: markdown changed but portal still shows old content
 Check whether:
@@ -692,39 +599,32 @@ Check whether:
 
 A private/incognito refresh is a good quick check.
 
----
-
-# 18. Suggested screenshot plan for maximum clarity
-
-If you want this guide to be very visual, add these screenshots later:
-
-1. **GitHub → Settings → Deploy keys → Add deploy key**
-2. **GitHub → Settings → Actions → Runners → New runner**
-3. **GitHub runner page showing the runner Idle**
-4. **Actions page showing a successful Deploy Help Docs run**
-5. **Repo tree showing `docs/help/`, `docs/help/assets/`, `frontend/help/`, and `.github/workflows/`**
-6. **Portal page showing updated Help Docs and images**
-
-Suggested asset folder for this guide:
+## Problem: runner shows Offline in GitHub
+Check the runner service:
 
 ```bash
-docs/help/assets/
+sudo systemctl status actions.runner.*.service
+sudo journalctl -u actions.runner.*.service -n 50
 ```
 
-Suggested file names:
+Restart if needed:
 
-```text
-github-deploy-key-form.png
-github-runner-new-runner.png
-github-runner-idle.png
-github-actions-success.png
-repo-help-docs-tree.png
-portal-help-docs-live.png
+```bash
+sudo systemctl restart actions.runner.*.service
 ```
+
+## Problem: SSH authentication fails for runner checkout
+Verify the SSH key is present and GitHub recognises it:
+
+```bash
+sudo ssh -T git@github.com
+```
+
+If it fails, re-add the public key to GitHub under **Settings → SSH and GPG keys**.
 
 ---
 
-# 19. Operational rules
+# 17. Operational rules
 
 - GitHub repo is the source of truth
 - Runner workspace is temporary build space
@@ -733,12 +633,13 @@ portal-help-docs-live.png
 - never manually maintain source screenshots in `frontend/help/assets/`
 - always store source markdown in `docs/help/`
 - always store source images in `docs/help/assets/`
+- do not use a deploy key — the account SSH key is used for all git operations
 
 ---
 
-# 20. Summary
+# 18. Summary
 
-This setup now supports:
+This setup supports:
 
 - GitHub-based Help Docs editing
 - automatic Help Docs build on the Raspberry Pi
