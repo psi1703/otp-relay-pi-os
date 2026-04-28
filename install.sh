@@ -184,10 +184,10 @@ chown root:otprelay "${INSTALL_DIR}/.env"
 chmod 640 "${INSTALL_DIR}/.env"
 chown -R otprelay:otprelay "${INSTALL_DIR}/data"
 chmod 700 "${INSTALL_DIR}/data"
-chmod -R initbox:root "${INSTALL_DIR}/frontend/help"
-chmod -R 755 "${INSTALL_DIR}/frontend/help"
 [[ -f "${INSTALL_DIR}/data/users.xlsx" ]] && chmod 600 "${INSTALL_DIR}/data/users.xlsx"
 [[ -f "${INSTALL_DIR}/data/audit.log"  ]] && chmod 600 "${INSTALL_DIR}/data/audit.log"
+chmod -R initbox:initbox "${INSTALL_DIR}/frontend/help"
+chmod -R 755 "${INSTALL_DIR}/frontend/help"
 ok "Permissions set"
 
 # ── 8. TLS certificate + nginx + systemd ─────────────────────────────────────
