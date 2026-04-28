@@ -1,0 +1,32 @@
+<h1 id="notes-and-tips">Notes and tips</h1>
+<h2 id="terminal-server-usage-tips">Terminal Server usage tips</h2>
+<ul>
+<li>When finished, use <strong>Log Out</strong> from the Ubuntu session. Do not just close the browser tab.</li>
+<li>For clipboard in browser-based Guacamole access, press <code>Ctrl + Alt + Shift</code> to open the menu.</li>
+<li>The browser version resizes better when the browser window is maximized.</li>
+</ul>
+<h2 id="expiry-reminders">Expiry reminders</h2>
+<ul>
+<li>VPN access including RDP, SFTP, and PAM expires after 90 days.</li>
+<li>Passwords also expire after 90 days.</li>
+<li>The system does not send reminders automatically.</li>
+</ul>
+<h2 id="timing-expectations">Timing expectations</h2>
+<ul>
+<li>It can take roughly 2 to 3 weeks to obtain access to the RTA servers.</li>
+</ul>
+<h2 id="test-server-access-flow">Test server access flow</h2>
+<ol>
+<li>Connect to the RTA VPN.</li>
+<li>Connect to the Jump Server via Remote Desktop.</li>
+<li>From the Jump Server, connect to the required test server.</li>
+</ol>
+<h2 id="copying-files-to-the-rta-environment">Copying files to the RTA environment</h2>
+<ol>
+<li>Connect to the RTA VPN.</li>
+<li>Use WinSCP from your local PC to connect to the RTA SFTP server.</li>
+<li>Copy files from the local PC to the SFTP server.</li>
+<li>Log in remotely to the target test or production server.</li>
+<li>Use WinSCP on the remote side to connect to the SFTP server.</li>
+<li>Copy files from the SFTP server to the target server.</li>
+</ol>

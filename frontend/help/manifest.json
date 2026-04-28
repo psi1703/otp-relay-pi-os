@@ -1,0 +1,90 @@
+{
+  "generatedAt": "2026-04-27T12:06:30Z",
+  "sourceSignature": "ee2792a614f51a7bdf054b4045aa272d20ad0f201cb4bd6c5aa34b027470b862",
+  "docs": [
+    {
+      "slug": "request-rdp-sftp-pam-access",
+      "title": "Request RDP, SFTP and PAM Access",
+      "section": "Access Requests",
+      "order": 4,
+      "htmlPath": "/help/rendered/request-rdp-sftp-pam-access.html"
+    },
+    {
+      "slug": "install-rta-vpn",
+      "title": "Install RTA VPN",
+      "section": "Access Requests",
+      "order": 5,
+      "htmlPath": "/help/rendered/install-rta-vpn.html"
+    },
+    {
+      "slug": "renew-rdp-sftp-pam-access",
+      "title": "Renew RDP, SFTP and PAM Access",
+      "section": "Access Requests",
+      "order": 6,
+      "htmlPath": "/help/rendered/renew-rdp-sftp-pam-access.html"
+    },
+    {
+      "slug": "reset-rta-password",
+      "title": "Reset RTA Password",
+      "section": "Accounts & Authentication",
+      "order": 2,
+      "htmlPath": "/help/rendered/reset-rta-password.html"
+    },
+    {
+      "slug": "configure-oracle-authenticator",
+      "title": "Configure Oracle Authenticator",
+      "section": "Accounts & Authentication",
+      "order": 3,
+      "htmlPath": "/help/rendered/configure-oracle-authenticator.html"
+    },
+    {
+      "slug": "new-user-onboarding",
+      "title": "New User Onboarding",
+      "section": "New Users",
+      "order": 1,
+      "htmlPath": "/help/rendered/new-user-onboarding.html"
+    },
+    {
+      "slug": "overview",
+      "title": "RTA Servers Access Guide",
+      "section": "Overview",
+      "order": 0,
+      "htmlPath": "/help/rendered/overview.html"
+    },
+    {
+      "slug": "notes-and-tips",
+      "title": "Notes and Tips",
+      "section": "Reference",
+      "order": 11,
+      "htmlPath": "/help/rendered/notes-and-tips.html"
+    },
+    {
+      "slug": "rta-it-support-ticket",
+      "title": "Create RTA IT Support Ticket",
+      "section": "Support",
+      "order": 9,
+      "htmlPath": "/help/rendered/rta-it-support-ticket.html"
+    },
+    {
+      "slug": "terminal-server-access",
+      "title": "Terminal Server Access",
+      "section": "Terminal Server",
+      "order": 10,
+      "htmlPath": "/help/rendered/terminal-server-access.html"
+    },
+    {
+      "slug": "install-winscp",
+      "title": "Install WinSCP",
+      "section": "Tools",
+      "order": 7,
+      "htmlPath": "/help/rendered/install-winscp.html"
+    },
+    {
+      "slug": "use-pam",
+      "title": "Use PAM",
+      "section": "Tools",
+      "order": 8,
+      "htmlPath": "/help/rendered/use-pam.html"
+    }
+  ]
+}

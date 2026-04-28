@@ -1,0 +1,32 @@
+<h1 id="user-manual-terminal-server-access-guide">User Manual: Terminal Server Access Guide</h1>
+<p>System: Ubuntu Terminal Server (<code>srvterminal</code>)<br />
+Internal IP: <code>172.31.10.82</code></p>
+<h2 id="method-1-web-browser-access-recommended">Method 1: Web browser access (recommended)</h2>
+<ol>
+<li>Open a browser.</li>
+<li>Go to <code>https://srvterminal.init-db.lan</code>.</li>
+<li>If you see the browser security warning, continue to the site.</li>
+<li>At the first login screen, use the local account:</li>
+<li>Username: <code>admin</code></li>
+<li>Password: <code>adminINIT+971</code></li>
+<li>After login, you will be redirected to the RDP login page.</li>
+<li>Enter your token and your Active Directory credentials, for example <code>INIT\ABC</code>.</li>
+<li>The Ubuntu desktop opens directly in the browser.</li>
+</ol>
+<h2 id="method-2-standard-windows-rdp">Method 2: Standard Windows RDP</h2>
+<ol>
+<li>Open <strong>Remote Desktop Connection</strong> in Windows.</li>
+<li>In the <strong>Computer</strong> field, enter <code>172.31.10.82</code> or <code>srvterminal</code>.</li>
+<li>Click <strong>Connect</strong>.</li>
+<li>Ensure the session is set to <strong>Xorg</strong>.</li>
+<li>Enter your domain username and password.</li>
+<li>Click <strong>OK</strong>.</li>
+</ol>
+<h2 id="browser-access-screenshots">Browser access screenshots</h2>
+<p><img alt="Guacamole login page in the browser" src="/help/assets/terminal-browser-login.png" /></p>
+<p><img alt="Browser-based RDP login page after the first terminal server login" src="/help/assets/terminal-browser-rdp-login.png" /></p>
+<p><img alt="Ubuntu desktop opened directly in the browser" src="/help/assets/terminal-browser-desktop.png" /></p>
+<h2 id="standard-windows-rdp-screenshots">Standard Windows RDP screenshots</h2>
+<p><img alt="Remote Desktop Connection client with the terminal server target" src="/help/assets/terminal-rdp-client.png" /></p>
+<p><img alt="Xorg login prompt for the terminal server session" src="/help/assets/terminal-xorg-login.png" /></p>
+<p><img alt="Ubuntu desktop after connecting through Windows RDP" src="/help/assets/terminal-rdp-desktop.png" /></p>
