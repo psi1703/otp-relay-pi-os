@@ -1,5 +1,5 @@
 # OTP Relay
-**Ubuntu 24.04 LTS · Company LAN · On-screen OTP delivery**
+**Raspberry Pi OS · Company LAN · On-screen OTP delivery**
 Server: `srvotp26.init-db.lan` · Portal: `https://srvotp26.init-db.lan`
 
 ---
@@ -9,7 +9,7 @@ Server: `srvotp26.init-db.lan` · Portal: `https://srvotp26.init-db.lan`
 ```
 iPhone 16 (company WiFi)
    ↓  iOS 26 Shortcut → HTTPS POST /sms-received
-srvotp26 (Ubuntu 24.04 VM)
+srvotp26 (Raspberry Pi OS)
    ↓  matches SMS to the active claimant
    ↓  stores OTP in memory (never on disk)
 Portal (user's browser)
@@ -50,7 +50,6 @@ otp-relay/
 ├── main.py                        # FastAPI application
 ├── monitor.py                     # Phone watcher + WhatsApp alert forwarder
 ├── install.sh                     # Fresh install from this repo
-├── update.sh                      # Full repo sync + package refresh + service restart
 ├── deploy_users.sh                # Hot-reload users.xlsx without restarting
 ├── setup_action-runner.sh         # Optional GitHub Actions runner setup helper
 ├── test_otp_relay.py              # End-to-end test suite
@@ -113,7 +112,6 @@ otp-relay/
 ├── main.py                      root:root         644
 ├── monitor.py                   root:root         755
 ├── install.sh                   root:root         755
-├── update.sh                    root:root         755
 ├── deploy_users.sh              root:root         755
 ├── test_otp_relay.py            root:root         755
 ├── .env.template                root:root         644
@@ -137,11 +135,11 @@ otp-relay/
 
 ---
 
-## Fresh Install (Ubuntu 24.04)
+## Fresh Install (Raspberry Pi OS)
 
 ```bash
 # Clone the repo into the install directory
-sudo git clone git@github.com:psi1703/otp-relay-psi.git /opt/otp-relay
+sudo git clone git@github.com:psi1703/otp-relay-pi-os.git /opt/otp-relay
 cd /opt/otp-relay
 
 # Run the installer
@@ -160,7 +158,7 @@ You will need a **fresh GitHub runner registration token**.
 
 Get it from:
 
-1. Open the repository on GitHub: `psi1703/otp-relay-psi`
+1. Open the repository on GitHub: `psi1703/otp-relay-pi-os`
 2. Go to **Settings**
 3. Open **Actions**
 4. Open **Runners**
@@ -259,16 +257,18 @@ sudo bash /opt/otp-relay/deploy_users.sh
 
 ## Updating
 
-```bash
-sudo bash /opt/otp-relay/update.sh               # full sync + package refresh + restart both services
-sudo bash /opt/otp-relay/update.sh --no-restart  # full sync without restart
-```
+All updates are deployed automatically by the GitHub Actions self-hosted runner.
+Push changes to `main` on GitHub and the matching workflow deploys only the affected
+part of the system — no manual SSH or script execution needed.
 
-> **Warning**
-> `update.sh` does a hard reset of `/opt/otp-relay` to `origin/main`.
-> Do not use it if you have uncommitted local changes in the live repo that you need to keep.
+| What changed | What to push | What deploys |
+|---|---|---|
+| `main.py` / `monitor.py` | push to main | `deploy-application-code` workflow |
+| `frontend/app.jsx` / `index.html` / `style.css` | push to main | `deploy-portal-ui` workflow |
+| `docs/help/` | push to main | `deploy-help-docs` workflow |
+| `install.sh`, `systemd/`, `nginx/` | push to main | `deploy-server-config` workflow |
 
-`update.sh` automatically detects changes to systemd unit files and re-copies them to `/etc/systemd/system/`, so unit changes deploy without manual steps.
+See [UPDATE-PIPELINE.md](./UPDATE-PIPELINE.md) for full details.
 
 ---
 
@@ -515,9 +515,6 @@ sudo systemctl status otp-monitor
 # Restart after config change
 sudo systemctl restart otp-relay
 sudo systemctl restart otp-monitor
-
-# Update from git
-sudo bash /opt/otp-relay/update.sh
 
 # Update user list
 sudo bash /opt/otp-relay/deploy_users.sh
