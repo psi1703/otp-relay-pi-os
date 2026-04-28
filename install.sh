@@ -4,7 +4,7 @@
 # Raspberry Pi OS (Debian 13 Trixie) · LAN only
 #
 # Usage:
-#   git clone git@github.com:psi1703/otp-relay-psi.git /opt/otp-relay
+#   git clone git@github.com:psi1703/otp-relay-pi-os.git /opt/otp-relay
 #   cd /opt/otp-relay
 #   sudo bash install.sh
 # =============================================================================
@@ -154,6 +154,19 @@ cd "${INSTALL_DIR}"
 "${INSTALL_DIR}/venv/bin/python" scripts/build_help_docs.py
 ok "Help Docs built"
 
+# ── 5b. Remove .git from install directory ───────────────────────────────────
+# /opt/otp-relay is managed by the GitHub Actions runner going forward.
+# The runner _work clone is the only git repo — /opt/otp-relay receives
+# files copied by deploy scripts and must never be a git repo itself.
+
+section "5b/8  Detach git from install directory"
+if [[ -d "${INSTALL_DIR}/.git" ]]; then
+  rm -rf "${INSTALL_DIR}/.git"
+  ok "Removed .git — /opt/otp-relay is now deploy-target only, not a git repo"
+else
+  ok ".git already absent"
+fi
+
 # ── 6. Configure .env ─────────────────────────────────────────────────────────
 
 section "6/8  Environment configuration"
@@ -178,7 +191,6 @@ find "${INSTALL_DIR}" -type f -not -path "${INSTALL_DIR}/venv/*" -exec chmod 644
 chmod +x "${INSTALL_DIR}/deploy_users.sh"
 chmod +x "${INSTALL_DIR}/test_otp_relay.py"
 chmod +x "${INSTALL_DIR}/install.sh"
-chmod +x "${INSTALL_DIR}/update.sh"
 chmod +x "${INSTALL_DIR}/monitor.py"
 chown root:otprelay "${INSTALL_DIR}/.env"
 chmod 640 "${INSTALL_DIR}/.env"
@@ -186,7 +198,8 @@ chown -R otprelay:otprelay "${INSTALL_DIR}/data"
 chmod 700 "${INSTALL_DIR}/data"
 [[ -f "${INSTALL_DIR}/data/users.xlsx" ]] && chmod 600 "${INSTALL_DIR}/data/users.xlsx"
 [[ -f "${INSTALL_DIR}/data/audit.log"  ]] && chmod 600 "${INSTALL_DIR}/data/audit.log"
-chmod -R initbox:initbox "${INSTALL_DIR}/frontend/help"
+# Allow GitHub Actions runner user to write Help Docs output via rsync
+chown -R initbox:initbox "${INSTALL_DIR}/frontend/help"
 chmod -R 755 "${INSTALL_DIR}/frontend/help"
 ok "Permissions set"
 
@@ -278,7 +291,7 @@ echo -e "  Users:    sudo bash ${INSTALL_DIR}/deploy_users.sh"
 echo -e "  Logs:     sudo journalctl -u otp-relay -f"
 echo -e "  Monitor:  sudo journalctl -u otp-monitor -f"
 echo -e "  Test:     python3 ${INSTALL_DIR}/test_otp_relay.py"
-echo -e "  Update:   sudo bash ${INSTALL_DIR}/update.sh"
+echo -e "  Updates:  push to GitHub — runner deploys automatically"
 echo ""
 
 # Optional next step:
