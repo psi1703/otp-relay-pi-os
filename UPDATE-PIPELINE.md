@@ -58,7 +58,7 @@ The self-hosted runner:
 Typical runner workspace:
 
 ```bash
-~/actions-runner/_work/otp-relay-psi/otp-relay-psi/
+~/actions-runner/_work/otp-relay-psi/otp-relay-pi-os/
 ```
 
 ## 2.3 Live deployment target
@@ -416,6 +416,11 @@ The self-hosted GitHub Actions runner account is responsible for deployment auto
 
 ## Root-managed targets
 The following areas remain root-managed:
+
+## Help Docs output directory
+/opt/otp-relay/frontend/help/ is owned by the runner user (initbox)
+so the Help Docs workflow can rsync generated output directly without sudo.
+This ownership is set by install.sh and must not be changed manually.
 
 ```bash
 /etc/systemd/system/
