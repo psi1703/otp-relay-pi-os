@@ -27,7 +27,6 @@ For a clickable architecture view with component descriptions, open the standalo
 [Open the interactive system design diagram](https://psi1703.github.io/otp-relay-pi-os/system-design.html)
 
 
-The HTML file is kept at the repository root so it can be linked from this README and published directly by GitHub Pages as `/system-design.html`.
 
 1. User opens the portal → enters their 2 or 3 character token → clicks **Claim my slot**
 2. If the queue is empty, they become the active user immediately. If someone is ahead of them, they enter the waiting room and are told not to trigger their OTP yet.
