@@ -564,3 +564,25 @@ a:hover { text-decoration: underline; }
     transform: none;
   }
 }
+
+/* Pop-out guide controls */
+.guide-window-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.guide-popout {
+  white-space: nowrap;
+}
+@media (max-width: 720px) {
+  .guide-window-actions {
+    align-items: flex-end;
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+  .guide-popout {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+}
