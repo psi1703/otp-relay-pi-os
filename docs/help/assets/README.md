@@ -1,32 +1,40 @@
-# Help doc assets
+# Help Assets
 
-Place screenshots and images for the help pages in this folder.
+Store screenshots and images for the RTA guide in this folder.
 
-Suggested filenames:
+These assets are copied by:
 
-- otp-claim-slot.png
-- otp-waiting-room.png
-- otp-code-visible.png
-- oracle-auth-qr.png
-- vpn-search.png
-- vpn-apply.png
-- vpn-new-access.png
-- vpn-form.png
-- vpn-add-rdp.png
-- vpn-add-pam.png
-- vpn-add-ssh.png
-- ivanti-add-connection.png
-- renew-vpn-search.png
-- renew-vpn-apply.png
-- renew-vpn-extension.png
-- renew-vpn-form.png
-- winscp-login.png
-- pam-search-account.png
-- pam-psm-rdp.png
-- helpdesk-section.png
-- helpdesk-form.png
-- terminal-browser-login.png
-- terminal-browser-rdp-login.png
-- terminal-browser-desktop.png
-- terminal-rdp-client.png
-- terminal-xorg-login.png
+```bash
+python3 scripts/build_help_docs.py
+```
+
+from:
+
+```text
+docs/help/assets/
+```
+
+to:
+
+```text
+frontend/help/assets/
+```
+
+The RTA Wizard floating guide can reference them in markdown like this:
+
+```md
+![VPN request form](assets/vpn-request-form-details.png)
+```
+
+The build rewrites that path to:
+
+```text
+/help/assets/vpn-request-form-details.png
+```
+
+When updating screenshots:
+
+1. Add or replace the PNG in `docs/help/assets/`.
+2. Reference it from the relevant `docs/help/*.md` file.
+3. Run `python3 scripts/build_help_docs.py`.
+4. Deploy the portal UI.
