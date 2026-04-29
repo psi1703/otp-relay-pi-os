@@ -18,8 +18,9 @@ ASSETS_DST = OUT_DIR / "assets"
 STATE_FILE = OUT_DIR / ".build-state.json"
 WIZARD_GUIDE_FILE = OUT_DIR / "wizard-guide.json"
 
+# Default mappings for user-facing guide topic pages. Maintainer-only pages such as
+# 00-overview.md are intentionally excluded unless they explicitly opt in.
 DEFAULT_WIZARD_STEP_MAP = {
-    "00-overview.md": ["form"],
     "01-new-user-onboarding.md": ["form", "account_creation", "save_iits"],
     "02-reset-rta-password.md": ["password_reset"],
     "03-configure-oracle-authenticator.md": ["oracle_auth"],
