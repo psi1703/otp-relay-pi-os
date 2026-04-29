@@ -302,8 +302,6 @@
           <div class="sub" id="stepSummary">Loading /help/wizard-guide.json</div>
         </div>
         <div class="actions">
-          <a class="btn" href="/" target="_blank" rel="noopener noreferrer">Open portal</a>
-          <button class="btn" type="button" id="reloadBtn">Reload guide</button>
           <button class="btn primary" type="button" onclick="window.close()">Close</button>
         </div>
       </div>
@@ -345,7 +343,6 @@
     const pageCountEl = document.getElementById('pageCount');
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
-    const reloadBtn = document.getElementById('reloadBtn');
 
     function escapeHtml(value) {
       return String(value || '')
@@ -455,7 +452,6 @@
     contentEl.addEventListener('click', openLinksInNewTabs);
     prevBtn.addEventListener('click', () => setPage(activePage - 1));
     nextBtn.addEventListener('click', () => setPage(activePage + 1));
-    reloadBtn.addEventListener('click', loadGuide);
     window.addEventListener('keydown', event => {
       if (event.key === 'ArrowLeft') setPage(activePage - 1);
       if (event.key === 'ArrowRight') setPage(activePage + 1);

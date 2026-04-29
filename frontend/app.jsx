@@ -1115,7 +1115,6 @@ function WizardView({ user, saveWizard, wizardStatus, openStep, setOpenStep, don
                       <span className={`pill ${done ? 'success' : 'warn'}`}>{done ? 'Completed by admin' : 'Waiting for admin'}</span>
                     )}
                     <button className="btn btn-secondary" onClick={() => openGuideOverlay(step)}>📖 View guide</button>
-                    <button className="btn btn-outline" onClick={() => popOutGuide(step)}>↗ Pop out</button>
                     {isNext && !done && <span className="pill primary">← Up next</span>}
                   </div>
                 </div>
