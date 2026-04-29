@@ -26,10 +26,7 @@ slug: new-user-onboarding
 12. Once VPN access is approved and closed, send the access-grant email to RTA IT Support.
 13. Download and install the RTA VPN.
 
-## Images
 
-- Optional: add a workflow / sequence image from the original guide.
-- Store screenshots in `docs/help/assets/`.
 
 ## Process overview image
 
