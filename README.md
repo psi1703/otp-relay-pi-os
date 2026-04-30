@@ -25,6 +25,8 @@ RTA onboarding progress is server-backed so reminders and progress persist acros
 For a clickable architecture view with component descriptions, open the standalone system design page:
 
 [Open the interactive system design diagram](https://psi1703.github.io/otp-relay-pi-os/system-design.html)
+> Tip: Use **Ctrl+Click** on Windows/Linux or **Cmd+Click** on Mac to open the diagram in a new tab.
+
 
 
 
