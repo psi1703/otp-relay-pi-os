@@ -1053,7 +1053,11 @@ function WizardView({ user, saveWizard, wizardStatus, openStep, setOpenStep, don
     const url = '/guide.html?step=' + encodeURIComponent(step.id) + '&page=' + encodeURIComponent(page);
     const features = 'popup=yes,width=1040,height=860,resizable=yes,scrollbars=yes';
     const win = window.open(url, 'rtaWizardGuide', features);
-    if (win) win.focus();
+
+    if (win) {
+      win.focus();
+      closeGuideOverlay();
+    }
   }
 
   function setGuidePage(page) {
