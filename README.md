@@ -28,8 +28,6 @@ For a clickable architecture view with component descriptions, open the standalo
 > Tip: Use **Ctrl+Click** on Windows/Linux or **Cmd+Click** on Mac to open the diagram in a new tab.
 
 
-
-
 1. User opens the portal → enters their 2 or 3 character token → clicks **Claim my slot**
 2. If the queue is empty, they become the active user immediately. If someone is ahead of them, they enter the waiting room and are told not to trigger their OTP yet.
 3. Once active, the user opens the platform and triggers the OTP SMS. They have **90 seconds** before their slot is reclaimed.
