@@ -9,15 +9,11 @@ docs/help/*.md
 docs/help/assets/*
 ```
 
-The runner then rebuilds and deploys the generated help output automatically. Manual build/deploy commands are only needed for local testing or emergency recovery.
+The runner then rebuilds and deploys the generated help output automatically. Manual build and deploy commands are only needed for local testing or emergency recovery.
 
-The portal loads the generated wizard guide from:
+The portal loads the generated wizard guide from `/help/wizard-guide.json`, so normal guide-text updates do **not** require editing `frontend/app.jsx`.
 
-```text
-/help/wizard-guide.json
-```
-
-This means normal guide-text updates do **not** require editing the large `frontend/app.jsx` file.
+For the four-lane pipeline overview, workflow triggers, and deployment lane separation, see [UPDATE-PIPELINE.md](./UPDATE-PIPELINE.md).
 
 ---
 
@@ -40,16 +36,14 @@ This means normal guide-text updates do **not** require editing the large `front
 
 ## 2. Automatic deployment flow
 
-The normal deployment flow is:
-
 ```text
 Maintainer edits docs/help/*.md or docs/help/assets/*
         ↓
-Maintainer commits and pushes to main
+Commit and push to main
         ↓
 GitHub Actions triggers deploy-help-docs.yml
         ↓
-Self-hosted Raspberry Pi runner checks out the repo
+Self-hosted Pi runner checks out the repo
         ↓
 Runner installs/uses Python build dependencies
         ↓
@@ -68,7 +62,7 @@ Maintainers should not normally run deployment commands on the Pi after a docs-o
 
 ## 3. Workflow trigger paths
 
-The Help Docs / RTA Wizard guide workflow should trigger when these files change:
+The Help Docs / RTA Wizard guide workflow triggers when these files change:
 
 ```yaml
 on:
@@ -81,9 +75,7 @@ on:
   workflow_dispatch:
 ```
 
-This ensures that guide text, screenshot changes, build-script changes, and workflow changes are deployed by the self-hosted runner.
-
-If `frontend/app.jsx` or `frontend/style.css` changes, that is application/UI code and should be handled by the application deployment workflow, not by the Help Docs-only workflow.
+If `frontend/app.jsx` or `frontend/style.css` changes, that is handled by the application or UI deployment workflow, not the Help Docs workflow. See [UPDATE-PIPELINE.md — Update lanes](./UPDATE-PIPELINE.md#4-update-lanes) for the full lane breakdown.
 
 ---
 
@@ -149,13 +141,7 @@ frontend/help/assets/*
 frontend/help/wizard-guide.json
 ```
 
-The rendered HTML pages are optional reference/fallback docs.
-
-The live wizard overlay uses `frontend/help/wizard-guide.json` after it is deployed and served as:
-
-```text
-/help/wizard-guide.json
-```
+The rendered HTML pages are optional reference/fallback docs. The live wizard overlay uses `wizard-guide.json` after it is deployed and served as `/help/wizard-guide.json`.
 
 Generated files should not be hand-edited. Any manual change under `frontend/help/` or `/opt/otp-relay/frontend/help/` can be overwritten by the next runner deployment.
 
@@ -175,20 +161,11 @@ Reference screenshots inside markdown like this:
 ![VPN request form](assets/vpn-request-form-details.png)
 ```
 
-The build rewrites that path to:
+The build rewrites that path to `/help/assets/vpn-request-form-details.png`.
 
-```text
-/help/assets/vpn-request-form-details.png
-```
+Do not manually maintain screenshots in `frontend/help/assets/` or `/opt/otp-relay/frontend/help/assets/` — those are generated/deployed outputs and may be overwritten by the next deployment.
 
-Do not manually maintain screenshots in:
-
-```text
-frontend/help/assets/
-/opt/otp-relay/frontend/help/assets/
-```
-
-Those are generated/deployed outputs and may be overwritten.
+Keep screenshot filenames stable when possible. If a filename changes, update every markdown reference that uses it.
 
 ---
 
@@ -202,7 +179,7 @@ Those are generated/deployed outputs and may be overwritten.
 4. Wait for the Pi self-hosted runner to complete the Help Docs workflow.
 5. Refresh the portal and open the RTA Wizard guide.
 
-No manual `build_help_docs.py`, `deploy_portal_ui.py`, or `systemctl restart` is normally required for markdown-only guide updates.
+No manual `build_help_docs.py`, `deploy_portal_ui.py`, or `systemctl restart` is needed for markdown-only guide updates.
 
 ### Add or replace a screenshot
 
@@ -211,42 +188,23 @@ No manual `build_help_docs.py`, `deploy_portal_ui.py`, or `systemctl restart` is
 3. Commit and push to `main`.
 4. Wait for the Pi runner workflow to complete.
 
-Keep screenshot filenames stable when possible. If a filename changes, update every markdown reference that uses it.
-
 ### Change overlay behavior
 
-Edit:
-
-```bash
-frontend/app.jsx
-```
-
-Only do this for behavior/loading/interaction changes, such as guide drag behavior, keyboard shortcuts, JSON loading, or link handling.
-
-Application-code changes should be deployed by the application deployment/update pipeline, not by the Help Docs-only workflow.
+Edit `frontend/app.jsx`. Only do this for behavior/loading/interaction changes such as guide drag behavior, keyboard shortcuts, JSON loading, or link handling. Changes to this file are deployed by the application deployment workflow, not the Help Docs workflow.
 
 ### Change overlay design
 
-Edit:
-
-```bash
-frontend/style.css
-```
-
-Only do this for layout/design changes, such as floating guide sizing, tab spacing, screenshot grid layout, or responsive behavior.
-
-Application-style changes should be deployed by the application deployment/update pipeline, not by the Help Docs-only workflow.
+Edit `frontend/style.css`. Only do this for layout/design changes such as floating guide sizing, tab spacing, or responsive behavior. Changes to this file are also deployed by the application deployment workflow.
 
 ---
 
-## 9. Local test commands
+## 9. Local build checks
 
-Use these commands only when testing locally or diagnosing a failed workflow.
-
-Build generated output locally:
+Use these commands only when testing locally or diagnosing a failed workflow. Use the app venv Python rather than plain `python3` to match the exact environment the runner uses:
 
 ```bash
-python3 scripts/build_help_docs.py
+cd /opt/otp-relay
+./venv/bin/python scripts/build_help_docs.py
 python3 -m json.tool frontend/help/wizard-guide.json >/dev/null
 ```
 
@@ -256,7 +214,7 @@ Inspect generated wizard content:
 python3 -m json.tool frontend/help/wizard-guide.json | less
 ```
 
-Confirm maintainer/reference text is not leaking into the wizard:
+Confirm maintainer/reference text is not leaking into the user-facing wizard:
 
 ```bash
 grep -R "source of truth" frontend/help/wizard-guide.json || true
@@ -270,7 +228,7 @@ Those commands should not return user-facing wizard content.
 
 ## 10. Live verification on the Pi
 
-After the GitHub Actions workflow completes, verify the live portal output from the Pi:
+After the GitHub Actions workflow completes, verify the live portal output:
 
 ```bash
 curl -s -o /dev/null -w "wizard=%{http_code}\n" http://127.0.0.1:8000/help/wizard-guide.json
@@ -291,6 +249,8 @@ Check the runner workspace if the live output does not match the repo:
 ls -R ~/actions-runner/_work/otp-relay-pi-os/otp-relay-pi-os/frontend/help
 ```
 
+For the install-time service and endpoint checks, see [README — Post-install verification](./README.md#post-install-verification).
+
 ---
 
 ## 11. Workflow verification
@@ -306,17 +266,19 @@ Confirm generated files
 Sync built help output to live portal
 ```
 
-The workflow should sync generated output with a command equivalent to:
+The workflow syncs generated output with:
 
 ```bash
 rsync -rltvz --delete --no-group --no-owner frontend/help/ /opt/otp-relay/frontend/help/
 ```
 
-`--delete` is intentional. It keeps the live `/help/` folder identical to the generated output, removing stale renamed files and old screenshots.
+`--delete` is intentional — it keeps the live `/help/` folder identical to the generated output, removing stale renamed files and old screenshots.
 
 ---
 
 ## 12. Permissions required for runner deployment
+
+<a id="12-permissions-required-for-runner-deployment"></a>
 
 The runner user, normally `initbox`, must be able to write into:
 
@@ -324,7 +286,7 @@ The runner user, normally `initbox`, must be able to write into:
 /opt/otp-relay/frontend/help/
 ```
 
-If the workflow fails with `Permission denied`, `Operation not permitted`, or `rsync error code 23`, restore permissions:
+If the workflow fails with `Permission denied`, `Operation not permitted`, or `rsync error code 23`, restore permissions on the Pi:
 
 ```bash
 sudo chown -R initbox:initbox /opt/otp-relay/frontend/help
@@ -334,9 +296,13 @@ find /opt/otp-relay/frontend/help -type f -exec chmod 644 {} \;
 
 Then re-run the workflow from GitHub Actions.
 
+For the broader ownership model covering root-managed targets and the sudo requirements for server-config deployment, see [UPDATE-PIPELINE.md — File and command ownership model](./UPDATE-PIPELINE.md#10-file-and-command-ownership-model) and [UPDATE-PIPELINE.md — Sudo model](./UPDATE-PIPELINE.md#9-sudo-model-for-server-config-deploy).
+
 ---
 
 ## 13. Troubleshooting
+
+<a id="13-troubleshooting"></a>
 
 ### Markdown changed but wizard text did not change
 
@@ -353,12 +319,7 @@ Check:
 
 Cause: a whole markdown document was mapped into a step instead of using a narrow wizard block.
 
-Fix:
-
-1. Move step-specific content into an explicit block such as `<!-- wizard:account_creation -->`.
-2. Keep only the admin-waiting content in that block.
-3. Rebuild locally or push to let the runner rebuild.
-4. Confirm `frontend/help/wizard-guide.json` no longer contains broad onboarding headings such as `High-level process` under admin-owned steps.
+Fix: move step-specific content into an explicit block such as `<!-- wizard:account_creation -->`, keep only the admin-waiting content in that block, then push and let the runner rebuild. Confirm `frontend/help/wizard-guide.json` no longer contains broad onboarding headings under admin-owned steps.
 
 ### Screenshot changed but portal still shows the old image
 
@@ -379,7 +340,7 @@ python3 scripts/build_help_docs.py
 python3 -m json.tool frontend/help/wizard-guide.json >/dev/null
 ```
 
-If invalid, inspect the markdown block that was edited most recently.
+If invalid, inspect the markdown block that was most recently edited.
 
 ### Runner shows Offline in GitHub
 
@@ -404,19 +365,17 @@ Then re-run the workflow from GitHub Actions.
 
 - Maintainers normally edit only `docs/help/*.md` and `docs/help/assets/*` for guide content updates.
 - Use `<!-- wizard:step_id -->` blocks for user-facing wizard content.
-- Do not map one long document into several wizard steps unless the whole document is actually relevant to every mapped step.
+- Do not map one long document into several wizard steps unless the whole document is relevant to every mapped step.
 - Do not put maintainer instructions, deployment notes, or source-of-truth explanations inside wizard blocks.
 - `00-overview.md` should remain reference-only unless it contains user-facing onboarding content.
 - Do not hand-edit `frontend/help/wizard-guide.json`, `frontend/help/manifest.json`, `frontend/help/rendered/*`, or `frontend/help/assets/*`.
-- Do not hand-edit `/opt/otp-relay/frontend/help/*`; it is runner-deployed output.
+- Do not hand-edit `/opt/otp-relay/frontend/help/*` — it is runner-deployed output.
 - Edit `frontend/app.jsx` only for guide behavior/loading changes.
 - Edit `frontend/style.css` only for guide layout/design changes.
 
 ---
 
 ## 15. Summary
-
-For normal guide updates:
 
 ```text
 Edit docs/help/*.md and docs/help/assets/*
@@ -431,3 +390,5 @@ Portal reads /help/wizard-guide.json and /help/assets/*
 ```
 
 Manual commands are for local validation and troubleshooting. The production Help Docs / RTA Wizard guide deployment is runner-driven.
+
+For the four-lane pipeline overview, see [UPDATE-PIPELINE.md](./UPDATE-PIPELINE.md).
