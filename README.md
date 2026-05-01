@@ -133,9 +133,9 @@ otp-relay/
 ├── frontend/
 │   ├── index.html               <runner-user>:<runner-user> 644 (runner-managed)
 │   ├── style.css                <runner-user>:<runner-user> 644 (runner-managed)
-│   ├──app.jsx                  <runner-user>:<runner-user>  644 (runner-managed)
-|   ├──guide.html               <runner-user>:<runner-user>  644 (runner-managed)   
-|   └──help/                    <runner-user>:<runner-user>  755 (runner-managed)
+│   ├──app.jsx                   <runner-user>:<runner-user>  644 (runner-managed)
+|   ├──guide.html                <runner-user>:<runner-user>  644 (runner-managed)   
+|   └──help/                     <runner-user>:<runner-user>  755 (runner-managed)
 ├── nginx/
 │   └── otp-relay.conf.template  root:root                   644
 ├── systemd/
