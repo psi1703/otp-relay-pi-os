@@ -152,15 +152,15 @@ otp-relay/
 ---
 
 ## Fresh Install (Raspberry Pi OS)
+1. Clone the portal branch
 
 ```bash
 # Clone the repo into the install directory
-sudo git clone git@github.com:psi1703/otp-relay-psi.git /opt/otp-relay
+sudo git clone git@github.com:psi1703/otp-relay-pi-os.git /opt/otp-relay
 cd /opt/otp-relay
 
-# Run the installer
-sudo bash install.sh
 ```
+
 
 `install.sh` creates the venv, sets permissions, generates the TLS cert, configures nginx and both systemd services — all in one shot. It will not overwrite an existing `.env`.
 
