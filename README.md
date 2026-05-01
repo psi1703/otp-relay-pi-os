@@ -67,13 +67,14 @@ otp-relay/
 ├── .gitignore
 ├── README.md
 ├── system-design.html             # Standalone interactive system design diagram
-├── index.html                     # For standalone interactive system design diagram
+├── index.html                     # Github Pages landing page for system design
 ├── UPDATE-PIPELINE.md
 ├── HELP-DOCS-DEPLOYMENT.md
 ├── frontend/
 │   ├── index.html                 # Portal shell
 │   ├── style.css                  # App styles
 │   ├── app.jsx                    # React UI logic for OTP, Wizard, floating guide, and Admin views
+|   ├── guide.html                 # Pop-out RTA Wizard guide page
 │   └── help/                      # Generated Help Docs output
 ├── nginx/
 │   └── otp-relay.conf.template    # nginx reverse proxy template rendered during install/deploy
@@ -120,30 +121,32 @@ otp-relay/
 ## File Permissions
 
 ```
-/opt/otp-relay/                  root:root         755
-├── main.py                      root:root         644
-├── monitor.py                   root:root         755
-├── install.sh                   root:root         755
-├── update.sh                    root:root         755
-├── deploy_users.sh              root:root         755
-├── test_otp_relay.py            root:root         755
-├── .env.template                root:root         644
-├── .env                         root:otprelay     640  (not in git)
+/opt/otp-relay/                  root:root                   755
+├── main.py                      <runner-user>:<runner-user> 644 (runner-managed)
+├── monitor.py                   <runner-user>:<runner-user> 755 (runner-managed)
+├── install.sh                   root:root                   755
+├── update.sh                    <runner-user>:<runner-user> 755 (runner-managed)
+├── deploy_users.sh              <runner-user>:<runner-user> 755 (runner-managed)
+├── test_otp_relay.py            <runner-user>:<runner-user> 755 (runner-managed)
+├── .env.template                root:root                   644
+├── .env                         root:otprelay               640 (not in git)
 ├── frontend/
-│   ├── index.html               root:root         644
-│   ├── style.css                root:root         644
-│   └── app.jsx                  root:root         644
+│   ├── index.html               <runner-user>:<runner-user> 644 (runner-managed)
+│   ├── style.css                <runner-user>:<runner-user> 644 (runner-managed)
+│   ├──app.jsx                  <runner-user>:<runner-user>  644 (runner-managed)
+|   ├──guide.html               <runner-user>:<runner-user>  644 (runner-managed)   
+|   └──help/                    <runner-user>:<runner-user>  755 (runner-managed)
 ├── nginx/
-│   └── otp-relay.conf.template  root:root         644
+│   └── otp-relay.conf.template  root:root                   644
 ├── systemd/
-│   ├── otp-relay.service        root:root         644
-│   └── otp-monitor.service      root:root         644
-├── venv/                        root:root         755  (not in git)
-└── data/                        otprelay:otprelay 700  (not in git)
-    ├── users.xlsx               otprelay:otprelay 600
-    ├── audit.log                otprelay:otprelay 600
-    ├── wizard_progress.json     otprelay:otprelay 600
-    └── admin_auth.json          otprelay:otprelay 600
+│   ├── otp-relay.service        root:root                   644
+│   └── otp-monitor.service      root:root                   644
+├── venv/                        root:root                   755  (not in git)
+└── data/                        otprelay:otprelay           700  (not in git)
+    ├── users.xlsx               otprelay:otprelay           600
+    ├── audit.log                otprelay:otprelay           600
+    ├── wizard_progress.json     otprelay:otprelay           600
+    └── admin_auth.json          otprelay:otprelay           600
 ```
 
 ---
