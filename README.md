@@ -1,4 +1,4 @@
-# OTP Relay
+# OTP Relay Portal
 **Ubuntu 24.04 LTS · Company LAN · On-screen OTP delivery**
 Server: `srvotp26.init-db.lan` · Portal: `https://srvotp26.init-db.lan`
 
@@ -42,7 +42,6 @@ A second service (`otp-monitor`) runs alongside the main app. It pings the iPhon
 
 Only one user is active at a time. This is a deliberate safety constraint: because OTP SMS messages carry no user-identifying information, the server cannot match an incoming SMS to a specific person. Concurrent active users would cause mis-delivery. The 90-second slot window keeps wait times short — a normal flow completes in under 30 seconds.
 
-
 ---
 
 ## Update pipeline
@@ -50,10 +49,12 @@ Only one user is active at a time. This is a deliberate safety constraint: becau
 Application code, portal UI, Help Docs, and server configuration are deployed through separate GitHub Actions workflows on the Raspberry Pi self-hosted runner.
 
 See [UPDATE-PIPELINE.md](./UPDATE-PIPELINE.md) for deployment flow, workflow triggers, server-config deployment behavior, sudo requirements, and troubleshooting.
+
+See [HELP-DOCS-DEPLOYMENT.md](./HELP-DOCS-DEPLOYMENT.md) for the Help Docs and RTA Wizard guide build flow, wizard block syntax, screenshot rules, and permission repair.
+
 ## Repository Structure
 
 ```
-
 otp-relay/
 ├── main.py                        # FastAPI application
 ├── monitor.py                     # Phone watcher + WhatsApp alert forwarder
@@ -203,16 +204,6 @@ sudo rm /etc/nginx/sites-enabled/default
 sudo systemctl reload nginx
 ```
 
-### Manual Help Docs build (only if needed)
-
-Help Docs are normally deployed automatically by the GitHub Actions workflow.  
-If you ever need to build them manually on the server, use the app venv Python, not plain `python3`:
-
-```bash
-cd /opt/otp-relay
-./venv/bin/python scripts/build_help_docs.py
-```
-
 ### After running the installer
 
 Edit `.env`:
@@ -247,6 +238,8 @@ sudo systemctl status otp-relay otp-monitor
 
 ### Post-install verification
 
+<a id="post-install-verification"></a>
+
 Run these checks after a fresh install:
 
 ```bash
@@ -265,6 +258,8 @@ Deploy the user list (place `otp-relay-users.xlsx` in your home directory first)
 sudo bash /opt/otp-relay/deploy_users.sh
 ```
 
+For local Help Docs build commands and how to validate the generated wizard JSON, see [HELP-DOCS-DEPLOYMENT.md — Local build checks](./HELP-DOCS-DEPLOYMENT.md#9-local-build-checks).
+
 ---
 
 ## Updating
@@ -275,8 +270,7 @@ sudo bash /opt/otp-relay/update.sh --no-restart  # full sync without restart
 ```
 
 > **Warning**
-> `update.sh` does a hard reset of `/opt/otp-relay` to `origin/main`.
-> Do not use it if you have uncommitted local changes in the live repo that you need to keep.
+> `update.sh` does a hard reset of `/opt/otp-relay` to `origin/main`. The normal flow is GitHub edit/push → Pi self-hosted runner → deploy scripts copy only changed files. See [UPDATE-PIPELINE.md — Operational rules](./UPDATE-PIPELINE.md#16-operational-rules).
 
 `update.sh` automatically detects changes to systemd unit files and re-copies them to `/etc/systemd/system/`, so unit changes deploy without manual steps.
 
@@ -399,7 +393,6 @@ This copies the file, sets correct permissions, and reloads the user list in the
 
 Rows that fail validation are skipped and written to the audit log as `import_skipped` events with the exact row number and reason.
 
-
 ## RTA Wizard Storage (server-backed)
 
 The RTA Access Wizard stores profile fields and progress on the server so data follows the user across devices.
@@ -417,7 +410,6 @@ Stored in `/opt/otp-relay/data/wizard_progress.json`:
 Admin authentication is stored separately in `/opt/otp-relay/data/admin_auth.json`.
 
 > These files are runtime data and are intentionally not tracked in git.
-
 
 ---
 
@@ -517,6 +509,10 @@ grep import_skipped /opt/otp-relay/data/audit.log
 
 ## Day-to-Day Operations
 
+<a id="day-to-day-operations"></a>
+
+For the day-to-day update flow (pushing code, UI, docs, or server config changes), see [UPDATE-PIPELINE.md — Day-to-day usage](./UPDATE-PIPELINE.md#13-day-to-day-usage).
+
 ```bash
 # Service status
 sudo systemctl status otp-relay
@@ -526,7 +522,7 @@ sudo systemctl status otp-monitor
 sudo systemctl restart otp-relay
 sudo systemctl restart otp-monitor
 
-# Update from git
+# Update from git (legacy full sync — use runner-based deployment for normal changes)
 sudo bash /opt/otp-relay/update.sh
 
 # Update user list
