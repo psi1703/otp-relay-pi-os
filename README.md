@@ -135,7 +135,7 @@ otp-relay/
 │   ├── style.css                <runner-user>:<runner-user> 644 (runner-managed)
 │   ├──app.jsx                   <runner-user>:<runner-user> 644 (runner-managed)
 |   ├──guide.html                <runner-user>:<runner-user> 644 (runner-managed)   
-|   └──help/                     <runner-user>:<runner-user> 755 (runner-managed)
+|   └──help/                     <runner-user>:<runner-user> 755 (generated Help Docs output)
 ├── nginx/
 │   └── otp-relay.conf.template  root:root                   644
 ├── systemd/
