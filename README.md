@@ -9,7 +9,7 @@ Server: `srvotp26.init-db.lan` · Portal: `https://srvotp26.init-db.lan`
 ```
 iPhone 16 (company WiFi)
    ↓  iOS 26 Shortcut → HTTPS POST /sms-received
-srvotp26 (Ubuntu 24.04 VM)
+srvotp26 (Raspberry Pi OS)
    ↓  matches SMS to the active claimant
    ↓  stores OTP in memory (never on disk)
 Portal (user's browser)
