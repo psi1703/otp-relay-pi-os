@@ -152,7 +152,10 @@ otp-relay/
 ---
 
 ## Fresh Install (Raspberry Pi OS)
-1. Clone the portal branch
+
+Use this sequence for a new Raspberry Pi OS target.
+
+### 1. Clone the portal branch
 
 ```bash
 # Clone the repo into the install directory
@@ -161,6 +164,47 @@ cd /opt/otp-relay
 
 ```
 
+### 2. Configure the self-hosted runner
+
+Configure the self-hosted GitHub Actions runner **before** running `install.sh`. This lets the installer detect the runner account and assign deploy-target ownership correctly on the first install.
+
+Create a fresh runner registration token from:
+
+```text
+psi1703/otp-relay-pi-os → Settings → Actions → Runners → New self-hosted runner
+```
+
+Then run:
+
+```bash
+sudo bash /opt/otp-relay/setup_action-runner.sh <RUNNER_TOKEN>
+```
+
+The setup script auto-detects the server architecture and registers the runner with the matching label:
+
+```text
+self-hosted,Linux,X64
+```
+
+or:
+
+```text
+self-hosted,Linux,ARM64
+```
+
+Optional overrides:
+
+```bash
+OTP_RELAY_RUNNER_USER=<runner-user> sudo -E bash /opt/otp-relay/setup_action-runner.sh <RUNNER_TOKEN>
+sudo bash /opt/otp-relay/setup_action-runner.sh <RUNNER_TOKEN> x64
+sudo bash /opt/otp-relay/setup_action-runner.sh <RUNNER_TOKEN> arm64
+```
+
+### 3. Run the installer once
+
+```bash
+sudo bash install.sh
+```
 
 `install.sh` creates the venv, sets permissions, generates the TLS cert, configures nginx and both systemd services — all in one shot. It will not overwrite an existing `.env`.
 
