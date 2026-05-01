@@ -1,5 +1,5 @@
 # OTP Relay Portal
-**Ubuntu 24.04 LTS · Company LAN · On-screen OTP delivery**
+**Raspberry Pi OS · Company LAN · On-screen OTP delivery**
 Server: `srvotp26.init-db.lan` · Portal: `https://srvotp26.init-db.lan`
 
 ---
@@ -151,7 +151,7 @@ otp-relay/
 
 ---
 
-## Fresh Install (Ubuntu 24.04)
+## Fresh Install (Raspberry Pi OS)
 
 ```bash
 # Clone the repo into the install directory
