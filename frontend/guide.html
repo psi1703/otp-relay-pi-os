@@ -415,8 +415,9 @@
       contentEl.innerHTML = page.html || '<div class="warn">This guide page is empty.</div>';
       pageCountEl.textContent = `${activePage + 1} / ${pages.length}`;
       prevBtn.disabled = activePage <= 0;
+      const isLastPage = activePage >= pages.length - 1;
       nextBtn.disabled = activePage >= pages.length - 1;
-      nextBtn.sytle.visibility = activePage >= pages.lenght  - 1 ? 'hidden' : 'visible';
+      nextBtn.sytle.visibility = activePage >= pages.length  - 1 ? 'hidden' : 'visible';
       updateUrl();
     }
 
