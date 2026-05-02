@@ -10,13 +10,32 @@ const CONFIG = {
 
 const API = {
   async json(url, options = {}) {
+    const { headers, ...fetchOptions } = options;
     const res = await fetch(url, {
-      headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
-      ...options,
+      ...fetchOptions,
+      headers: { 'Content-Type': 'application/json', ...(headers || {}) },
     });
     let data = null;
     try { data = await res.json(); } catch { data = null; }
-    if (!res.ok) throw new Error((data && (data.detail || data.error)) || `Request failed: ${res.status}`);
+    if (!res.ok) {
+      const raw = data && (data.detail || data.error || data.message);
+      let message = `Request failed: ${res.status}`;
+      if (typeof raw === 'string') {
+        message = raw;
+      } else if (Array.isArray(raw)) {
+        message = raw.map(item => {
+          if (typeof item === 'string') return item;
+          if (item && typeof item === 'object') {
+            const where = Array.isArray(item.loc) ? item.loc.join('.') : '';
+            return [where, item.msg || item.message || JSON.stringify(item)].filter(Boolean).join(': ');
+          }
+          return String(item);
+        }).join('; ');
+      } else if (raw && typeof raw === 'object') {
+        message = raw.msg || raw.message || JSON.stringify(raw);
+      }
+      throw new Error(message);
+    }
     return data;
   },
   claimOtp(token) { return this.json('/claim-otp', { method: 'POST', body: JSON.stringify({ token }) }); },
@@ -33,7 +52,9 @@ const API = {
   adminUsers(session) { return this.json('/admin/users', { headers: session ? { 'X-Admin-Session': session } : {} }); },
   adminLog(session) { return this.json('/admin/log?limit=500', { headers: session ? { 'X-Admin-Session': session } : {} }); },
   adminConfig(session) { return this.json('/admin/config', { headers: session ? { 'X-Admin-Session': session } : {} }); },
-  saveAdminConfig(session, admin_tokens) { return this.json('/admin/config', { method: 'POST', headers: { 'X-Admin-Session': session }, body: JSON.stringify({ admin_tokens }) }); },
+  saveAdminConfig(session, payload) {
+    return this.json('/admin/config', { method: 'POST', headers: { 'X-Admin-Session': session }, body: JSON.stringify({ admin_tokens: payload }) });
+  },
   notifyAdminTask(payload) { return this.json('/api/onboard/notify', { method: 'POST', body: JSON.stringify(payload) }); },
 };
 
@@ -761,9 +782,31 @@ function App() {
   }
 
   async function saveConfig() {
-    const tokens = admin.configTokens.split(',').map(s => s.trim().toUpperCase()).filter(Boolean);
-    await API.saveAdminConfig(admin.session, tokens);
-    await loadAdminData();
+    const tokens = admin.configTokens
+      .split(',')
+      .map(s => s.trim().toUpperCase())
+      .filter(Boolean);
+
+    setAdmin(s => ({ ...s, loading: true, error: '' }));
+
+    try {
+      const saved = await API.saveAdminConfig(admin.session, tokens);
+      await loadAdminData();
+      setAdmin(s => ({
+        ...s,
+        configTokens: (saved.admin_tokens || tokens).join(', '),
+        loading: false,
+        error: '',
+      }));
+      return true;
+    } catch (e) {
+      setAdmin(s => ({
+        ...s,
+        loading: false,
+        error: e.message || 'Admin config save failed',
+      }));
+      return false;
+    }
   }
 
   async function logoutAdmin() {
@@ -1320,11 +1363,7 @@ function GuideOverlay({ step, guide, page, setPage, onClose, onPopOut }) {
         <div className="guide-modal-footer">
           <button className="btn btn-secondary" onClick={() => setPage(page - 1)} disabled={page <= 0}>← Back</button>
           <div className="guide-count">{page + 1} / {pages.length}</div>
-          {page < lastPage ? (
-            <button className="btn btn-primary" onClick={() => setPage(page + 1)}>Next →</button>
-          ) : (
-            <div style={{ width: 86 }} />
-          )}
+          <button className="btn btn-primary" onClick={() => setPage(page + 1)} disabled={page >= lastPage}>Next →</button>
         </div>
       </section>
     </div>
@@ -1782,12 +1821,23 @@ function AdminView({ admin, setAdmin, doAdminAuth, loadAdminData, toggleAdminSte
         {showAdminTokenConfig && (
           <div onClick={() => setShowAdminTokenConfig(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(15, 23, 42, 0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, zIndex: 1000 }}>
             <div className="card side-card" onClick={e => e.stopPropagation()} style={{ width: '100%', maxWidth: 420, margin: 0 }}>
-              <div className="side-card-title">Admin token config</div>
-              <div className="field"><label>Admin tokens</label><input value={admin.configTokens} onChange={e => setAdmin(s => ({ ...s, configTokens: e.target.value }))} /></div>
-              <div className="small" style={{ marginTop: 10 }}>Seeded for Jathin, Amer, and Christian, but editable from the portal.</div>
+              <div className="side-card-title">Allowed admin tokens</div>
+              <div className="field"><input aria-label="Allowed admin tokens" value={admin.configTokens} onChange={e => setAdmin(s => ({ ...s, configTokens: e.target.value, error: '' }))} /></div>
+              <div className="small" style={{ marginTop: 10 }}>Comma-separated admin tokens. Defaults are JPR, AMD, and SCH; add or remove tokens here and save.</div>
+              {admin.error && <div className="error-box" style={{ marginTop: 10 }}>{String(admin.error)}</div>}
               <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 12 }}>
-                <button className="btn btn-secondary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={() => setShowAdminTokenConfig(false)}>Close</button>
-                <button className="btn btn-primary" style={{ width: 'auto', whiteSpace: 'nowrap' }} onClick={() => { saveConfig(); setShowAdminTokenConfig(false); }}>Save config</button>
+                <button className="btn btn-secondary" style={{ width: 'auto', whiteSpace: 'nowrap' }} disabled={admin.loading} onClick={() => setShowAdminTokenConfig(false)}>Close</button>
+                <button
+                  className="btn btn-primary"
+                  style={{ width: 'auto', whiteSpace: 'nowrap' }}
+                  disabled={admin.loading}
+                  onClick={async () => {
+                    const ok = await saveConfig();
+                    if (ok) setShowAdminTokenConfig(false);
+                  }}
+                >
+                  {admin.loading ? 'Saving…' : 'Save config'}
+                </button>
               </div>
             </div>
           </div>
